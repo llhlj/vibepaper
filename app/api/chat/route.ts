@@ -218,7 +218,10 @@ async function handleZhipuPaperGeneration(params: GenerateQuestionsParams) {
 3. 必须生成正好 ${params.questionCount} 道题目
 4. 每道题必须包含: id, type, content, answer, explanation
 5. 选择题需要options数组，包含4个选项
-6. 数学公式使用LaTeX: inline用 $ $，block用 $$ $$（注意在JSON中不需要双重转义）
+6. 数学公式使用LaTeX语法：
+   - 行内公式使用单美元符号：$公式$
+   - 独立公式使用双美元符号：$$公式$$
+   - 示例：计算 $2+3$ 的值，或求解 $$x^2 + 2x + 1 = 0$$
 
 ## 题目类型
 - choice: 多选题（4个选项，1个正确答案）

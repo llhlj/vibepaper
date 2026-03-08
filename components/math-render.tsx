@@ -3,7 +3,6 @@
 import { useEffect, useRef } from 'react';
 import MarkdownIt from 'markdown-it';
 import katex from 'katex';
-import 'katex/dist/katex.min.css';
 
 interface MathRendererProps {
   content: string;
@@ -20,30 +19,43 @@ function renderMath(content: string): string {
 
   let html = md.render(content);
 
-  // Render inline math: \( ... \)
+  // Handle display math: $$ ... $$ (must be before inline $)
+  html = html.replace(/\$\$([\s\S]*?)\$\$/g, (match, math) => {
+    try {
+      return katex.renderToString(math.trim(), { throwOnError: false, displayMode: true });
+    } catch (e) {
+      console.warn('KaTeX $$...$$ error:', e, math);
+      return `<span class="katex-error">${match}</span>`;
+    }
+  });
+
+  // Handle inline math: $ ... $ (but not $$)
+  html = html.replace(/(?<!\$)\$([^\$]+?)\$(?!\$)/g, (match, math) => {
+    try {
+      return katex.renderToString(math.trim(), { throwOnError: false, displayMode: false });
+    } catch (e) {
+      console.warn('KaTeX $...$ error:', e, math);
+      return `<span class="katex-error">${match}</span>`;
+    }
+  });
+
+  // Handle LaTeX \[ ... \] for display math
+  html = html.replace(/\\\[([\s\S]*?)\\\]/g, (match, math) => {
+    try {
+      return katex.renderToString(math.trim(), { throwOnError: false, displayMode: true });
+    } catch (e) {
+      console.warn('KaTeX \\[...\\] error:', e);
+      return `<span class="katex-error">${match}</span>`;
+    }
+  });
+
+  // Handle LaTeX \( ... \) for inline math
   html = html.replace(/\\\((.*?)\\\)/g, (match, math) => {
     try {
       return katex.renderToString(math, { throwOnError: false, displayMode: false });
     } catch (e) {
-      return match;
-    }
-  });
-
-  // Render display math: $$ ... $$
-  html = html.replace(/\$\$(.*?)\$\$/gs, (match, math) => {
-    try {
-      return katex.renderToString(math.trim(), { throwOnError: false, displayMode: true });
-    } catch (e) {
-      return match;
-    }
-  });
-
-  // Also support \( ... \) patterns that might be in the original text
-  html = html.replace(/\\\\\((.*?)\\\\\)/g, (match, math) => {
-    try {
-      return katex.renderToString(math, { throwOnError: false, displayMode: false });
-    } catch (e) {
-      return match;
+      console.warn('KaTeX \\(...\\) error:', e);
+      return `<span class="katex-error">${match}</span>`;
     }
   });
 
