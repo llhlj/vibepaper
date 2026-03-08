@@ -133,7 +133,7 @@ async function handleZhipuChat(message: string) {
     );
   } else {
     // 使用OpenAI SDK
-    const openai = client as OpenAI;
+    const openai = createZhipuClient() as OpenAI;
     const stream = await openai.chat.completions.create({
       model: model,
       messages: [
@@ -212,32 +212,21 @@ async function handleZhipuPaperGeneration(params: GenerateQuestionsParams) {
 
   const systemPrompt = `你是VibePaper的试题生成引擎。你的任务是根据教师的要求生成高质量的K-12测试题目。
 
-## 重要规则
-1. 必须返回纯JSON格式，包含"questions"数组
-2. 不要使用markdown代码块，直接输出JSON
+## 重要规则（必须严格遵守）
+1. 只返回JSON对象，不要包含任何解释性文字、注释或其他内容
+2. 不要使用markdown代码块（如 \`\`\`json），直接输出JSON
 3. 必须生成正好 ${params.questionCount} 道题目
 4. 每道题必须包含: id, type, content, answer, explanation
 5. 选择题需要options数组，包含4个选项
-6. 数学公式使用LaTeX: inline用 \\( \\) 或 $ $，block用 $$ $$
+6. 数学公式使用LaTeX: inline用 $ $，block用 $$ $$（注意在JSON中不需要双重转义）
 
 ## 题目类型
 - choice: 多选题（4个选项，1个正确答案）
 - fill: 填空题（简短答案）
 - essay: 问答题（需要详细解释）
 
-## 输出格式示例
-{
-  "questions": [
-    {
-      "id": "q1",
-      "type": "choice",
-      "content": "题目内容",
-      "options": ["选项A", "选项B", "选项C", "选项D"],
-      "answer": "正确答案",
-      "explanation": "详细解释"
-    }
-  ]
-}`;
+## 输出格式（直接输出此格式，不要添加任何其他内容）
+{"questions":[{"id":"q1","type":"choice","content":"题目内容","options":["选项A","选项B","选项C","选项D"],"answer":"正确答案","explanation":"详细解释"}]}`;
 
   let responseText = '';
 
@@ -329,12 +318,23 @@ async function handleZhipuPaperGeneration(params: GenerateQuestionsParams) {
   // 解析JSON响应
   let jsonText = responseText.trim();
 
-  // 移除可能的markdown代码块
-  if (jsonText.startsWith('```')) {
-    const lines = jsonText.split('\n');
-    const startIdx = lines[0].includes('json') ? 1 : 1;
-    const endIdx = lines.findIndex(line => line.trim() === '```');
-    jsonText = lines.slice(startIdx, endIdx > 0 ? endIdx : undefined).join('\n');
+  console.log('[JSON Parse] Original response (first 500 chars):', jsonText.substring(0, 500));
+
+  // 移除可能的markdown代码块和额外内容
+  if (jsonText.includes('```')) {
+    const codeBlockMatch = jsonText.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/);
+    if (codeBlockMatch) {
+      jsonText = codeBlockMatch[1].trim();
+      console.log('[JSON Parse] Extracted from markdown code block');
+    }
+  }
+
+  // 尝试找到JSON对象的起始和结束位置
+  const firstBrace = jsonText.indexOf('{');
+  const lastBrace = jsonText.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    jsonText = jsonText.substring(firstBrace, lastBrace + 1);
+    console.log('[JSON Parse] Extracted JSON object from response');
   }
 
   let parsed;
@@ -343,52 +343,34 @@ async function handleZhipuPaperGeneration(params: GenerateQuestionsParams) {
   // First attempt: direct parse
   try {
     parsed = JSON.parse(jsonText);
+    console.log('[JSON Parse] Success on first attempt');
   } catch (e) {
     parseError = e;
-    console.log('[JSON Parse] First attempt failed, trying alternatives...');
+    console.log('[JSON Parse] First attempt failed:', (e as Error).message);
 
     // Second attempt: fix common JSON escaping issues from AI
     try {
-      // The AI returns LaTeX with single backslashes like \( which are invalid in JSON
-      // We need to escape them to \\( for valid JSON
       let fixedJson = jsonText;
-      // Escape single backslashes before LaTeX delimiters and commands
-      // Note: In JS strings, we need \\ to represent a single backslash
-      fixedJson = fixedJson.split('\\(').join('\\\\(');
-      fixedJson = fixedJson.split('\\)').join('\\\\)');
-      fixedJson = fixedJson.split('\\[').join('\\\\[');
-      fixedJson = fixedJson.split('\\]').join('\\\\]');
-      // Also escape common LaTeX commands
-      fixedJson = fixedJson.split('\\sqrt').join('\\\\sqrt');
-      fixedJson = fixedJson.split('\\frac').join('\\\\frac');
-      fixedJson = fixedJson.split('\\pi').join('\\\\pi');
-      fixedJson = fixedJson.split('\\text').join('\\\\text');
-      fixedJson = fixedJson.split('\\triangle').join('\\\\triangle');
-      fixedJson = fixedJson.split('\\angle').join('\\\\angle');
-      fixedJson = fixedJson.split('\\circ').join('\\\\circ');
+      // Fix LaTeX backslash issues - match single backslash and replace with double
+      const latexFixes: [string, string][] = [
+        ['\\\\(', '\\\\\\\\('], ['\\\\)', '\\\\\\\\)'],
+        ['\\\\[', '\\\\\\\\['], ['\\\\]', '\\\\\\\\]'],
+        ['\\\\sqrt', '\\\\\\\\sqrt'], ['\\\\frac', '\\\\\\\\frac'],
+        ['\\\\pi', '\\\\\\\\pi'], ['\\\\text', '\\\\\\\\text'],
+        ['\\\\times', '\\\\\\\\times'], ['\\\\div', '\\\\\\\\div'],
+      ];
+      for (const [from, to] of latexFixes) {
+        fixedJson = fixedJson.split(from).join(to);
+      }
 
-      console.log('[JSON Parse] Attempting with added escaping...');
-      console.log('[JSON Parse] Sample after escape:', fixedJson.substring(0, 300));
+      console.log('[JSON Parse] Attempting with LaTeX escaping fixes...');
       parsed = JSON.parse(fixedJson);
       console.log('[JSON Parse] Success with escaping fixes');
     } catch (e2) {
-      // Third attempt: extract JSON object with regex
-      console.log('[JSON Parse] Second attempt failed, trying regex extraction...');
-      const match = jsonText.match(/\{[\s\S]*\}/);
-      if (match) {
-        try {
-          parsed = JSON.parse(match[0]);
-          console.log('[JSON Parse] Success with regex extraction');
-        } catch (e3) {
-          console.error('[JSON Parse Error] All attempts failed');
-          console.error('[JSON Parse Error] Snippet:', jsonText.substring(0, 500));
-          throw new Error('Failed to parse JSON from response. The AI returned malformed JSON.');
-        }
-      } else {
-        console.error('[JSON Parse Error] No valid JSON found');
-        console.error('[JSON Parse Error] Snippet:', jsonText.substring(0, 500));
-        throw new Error('Failed to parse JSON from response. No valid JSON object found.');
-      }
+      console.error('[JSON Parse Error] All attempts failed');
+      console.error('[JSON Parse Error] Full response:', responseText.substring(0, 1000));
+      console.error('[JSON Parse Error] Extracted text:', jsonText.substring(0, 500));
+      throw new Error(`Failed to parse JSON from response. ${(parseError as Error).message}`);
     }
   }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, use, Suspense } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Paper, Question, StudentRecord } from '@/types/paper';
 import { QuestionCard } from '@/components/question-card';
@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, CheckCircle2, Clock, GraduationCap, Home } from 'lucide-react';
 import Link from 'next/link';
 
-function ExamPageContent() {
+export function ExamContent() {
   const searchParams = useSearchParams();
   const paperId = searchParams.get('id');
 
@@ -270,20 +270,5 @@ function ExamPageContent() {
         </div>
       )}
     </div>
-  );
-}
-
-export default function ExamPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-primary" />
-          <p className="text-muted-foreground">Loading exam...</p>
-        </div>
-      </div>
-    }>
-      <ExamPageContent />
-    </Suspense>
   );
 }

@@ -1,0 +1,60 @@
+{
+  "id": "bf8ee39d-c385-4668-813b-cdc22e21d365",
+  "title": "math - 3年级",
+  "questions": [
+    {
+      "id": "q1",
+      "type": "choice",
+      "content": "A rectangular garden is $12$ meters long and $8$ meters wide. What is the perimeter of the garden?",
+      "options": [
+        "$20$ meters",
+        "$32$ meters",
+        "$40$ meters",
+        "$96$ meters"
+      ],
+      "answer": "$40$ meters",
+      "explanation": "To find the perimeter of a rectangle, use the formula $P = 2 \\times (\\text{length} + \\text{width})$. Substituting the values: $2 \\times (12 + 8) = 2 \\times 20 = 40$ meters."
+    },
+    {
+      "id": "q2",
+      "type": "fill",
+      "content": "Find the missing number in the equation below: $456 + \\_ = 925$",
+      "answer": "469",
+      "explanation": "To find the missing number, subtract $456$ from $925$.\n$$925 - 456 = 469$$\nSo, $456 + 469 = 925$."
+    },
+    {
+      "id": "q3",
+      "type": "choice",
+      "content": "Which fraction is equivalent to $\\frac{1}{2}$?",
+      "options": [
+        "$\\frac{2}{5}$",
+        "$\\frac{3}{6}$",
+        "$\\frac{4}{9}$",
+        "$\\frac{2}{3}$"
+      ],
+      "answer": "$\\frac{3}{6}$",
+      "explanation": "Fractions are equivalent if they represent the same value. If you multiply both the numerator and the denominator of $\\frac{1}{2}$ by $3$, you get $\\frac{3}{6}$."
+    },
+    {
+      "id": "q4",
+      "type": "essay",
+      "content": "Sarah has a ribbon that is $24$ inches long. She cuts it into $4$ equal pieces. How long is each piece? Explain your reasoning and show your calculation.",
+      "answer": "$6$ inches",
+      "explanation": "To find the length of each piece, divide the total length by the number of pieces.\n$$24 \\div 4 = 6$$\nEach piece is $6$ inches long. This is because $6 + 6 + 6 + 6 = 24$."
+    },
+    {
+      "id": "q5",
+      "type": "choice",
+      "content": "What is $450 + 290$?",
+      "options": [
+        "$730$",
+        "$740$",
+        "$750$",
+        "$840$"
+      ],
+      "answer": "$740",
+      "explanation": "Add the hundreds place: $400 + 200 = 600$.\nAdd the tens place: $50 + 90 = 140$.\nTotal: $600 + 140 = 740$."
+    }
+  ],
+  "createdAt": "2026-03-08T16:41:35.115Z"
+}
