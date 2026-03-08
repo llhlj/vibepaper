@@ -1,0 +1,54 @@
+{
+  "id": "344d6168-71f7-421d-bf26-b774084e6cd1",
+  "title": "english - 4年级",
+  "questions": [
+    {
+      "id": "q1",
+      "type": "choice",
+      "content": "Which word is an antonym (opposite) of 'ENORMOUS'?",
+      "options": [
+        "Gigantic",
+        "Tiny",
+        "Heavy",
+        "Fast"
+      ],
+      "answer": "Tiny",
+      "explanation": "'Enormous' means very big or large. An antonym is a word with the opposite meaning. Therefore, 'Tiny' (very small) is the correct antonym."
+    },
+    {
+      "id": "q2",
+      "type": "fill",
+      "content": "Complete the sentence with the correct past tense verb: 'Yesterday, I _____ my blue kite at the park.' (Use the word: fly)",
+      "answer": "flew",
+      "explanation": "The verb 'fly' is irregular. In the past tense, 'fly' changes to 'flew'."
+    },
+    {
+      "id": "q3",
+      "type": "choice",
+      "content": "Which sentence is written correctly?",
+      "options": [
+        "Me and Tom is going to the library.",
+        "Tom and I are going to the library.",
+        "Tom and me am going to the library.",
+        "I and Tom is going to the library."
+      ],
+      "answer": "Tom and I are going to the library.",
+      "explanation": "You must use the subject pronoun 'I' instead of 'Me'. Additionally, 'Tom and I' is a plural subject, so the helping verb must be 'are' (not 'is' or 'am')."
+    },
+    {
+      "id": "q4",
+      "type": "essay",
+      "content": "Imagine you have a magic door in your room that leads to any place in the world. Write a short story (3-5 sentences) about where you would go and what you would do there.",
+      "answer": "Answers will vary. Look for: Correct capitalization, correct punctuation, complete sentences, and creative ideas.",
+      "explanation": "This question tests creative writing and grammar usage. Students should demonstrate an understanding of narrative structure and basic sentence mechanics."
+    },
+    {
+      "id": "q5",
+      "type": "fill",
+      "content": "Calculate the total letters in the compound word 'basketball' and write the number: _____",
+      "answer": "10",
+      "explanation": "The word 'basketball' is formed by combining 'basket' (6 letters) and 'ball' (4 letters). 6 + 4 = 10."
+    }
+  ],
+  "createdAt": "2026-03-08T15:41:08.450Z"
+}

@@ -1,0 +1,33 @@
+{
+  "id": "4e38cd32-4ac8-49e8-825a-d528457a8a65",
+  "title": "Math - 6年级",
+  "questions": [
+    {
+      "id": "q1",
+      "type": "choice",
+      "content": "A store is offering a sale with 20% off the original price of a jacket. If the original price of the jacket is $80, what is the sale price?",
+      "options": [
+        "$16",
+        "$60",
+        "$64",
+        "$100"
+      ],
+      "answer": "$64",
+      "explanation": "To find the sale price, first calculate the discount amount by multiplying the original price by the discount percentage: \\( 80 \\times 0.20 = 16 \\). Then, subtract the discount from the original price: \\( 80 - 16 = 64 \\). Therefore, the sale price is $64."
+    },
+    {
+      "id": "q2",
+      "type": "choice",
+      "content": "Which of the following expressions is equivalent to the expression \\( 3(x + 4) - 2x \\)?",
+      "options": [
+        "\\( 5x + 4 \\)",
+        "\\( x + 12 \\)",
+        "\\( 5x + 12 \\)",
+        "\\( x + 4 \\)"
+      ],
+      "answer": "\\( x + 12 \\)",
+      "explanation": "Use the distributive property to expand the first part: \\( 3(x + 4) = 3x + 12 \\). Then combine like terms with the rest of the expression: \\( 3x + 12 - 2x \\). Combining \\( 3x \\) and \\( -2x \\) gives \\( x \\), leaving the final simplified expression as \\( x + 12 \\)."
+    }
+  ],
+  "createdAt": "2026-03-08T15:22:19.114Z"
+}
